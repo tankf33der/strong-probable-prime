@@ -7,4 +7,4 @@ Take Bradley's [hash](https://www.techneon.com/) tables and
 all the 11M numbers for false alarms of the composit check.
 
 
-#### Having fun is the only price.
+Having fun is the only price.
