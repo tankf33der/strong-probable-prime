@@ -1,6 +1,7 @@
 (load "tables.l")
+(setq *U32 `(hex "FFFFFFFF"))
 (de mod32 (N)
-   (& N `(hex "FFFFFFFF")) )
+   (& N *U32) )
 (de mod32* (A B)
    (mod32 (* A B)) )
 (de **Mod (X Y N)
@@ -28,27 +29,44 @@
 
       (println 'secondIF (**Mod B (** R 2) N))
 
-#{
-      (setq NC (positive N))
+      #(setq NC (positive N))
       # (println 'posZ (positive Z) 'R*R 'NC NC (* R R) (% (mod32* R R) N))
-      (do (positive Z)
-         (setq R (% (* R R) NC))
+      (do Z
+         (setq R (% (* R R) N))
+         (println 'inside-Z 'R R)
          (when (= R (dec N))
             (println 'found 'R R 'decN (dec N))
          )
       )
-}#
+      (println 'after-Z-loop 'B B 'N N)
    )
 )
-(sprp 480194653 2139)
-(sprp 20074069 32374)
+#(sprp 480194653 2139)
+#(sprp 20074069 32374)
+#(sprp 92829781 3350)
+#(sprp 8718775377449 2)
+#(sprp 8651776913431 2)
+(sprp 8651776913431 767)
 
-(de check (N)
+(de check32 (N)
    (let B (get *B32 (inc (>> 24 (mod32* `(hex "AD625B89") N))))
-      (println 'B B)
+      (println 'B32 B)
+   )
+)
+(de check64 (N)
+   (let B (get *B64 (inc (>> 18 (mod32* `(hex "AD625B89") N))))
+      (println 'B64 B)
    )
 )
 
-#(println (check 480194653))
+#(println (check32 480194653))
+#(println (check32 92829781))
+#(println (check64 8718775377449))
+#(println (check64 3315293452192821991))
+(println (check64 1152965996591997761))
+
+
+
+
 (msg 'ok)
 (bye)
