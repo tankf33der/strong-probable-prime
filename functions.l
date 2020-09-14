@@ -3,7 +3,7 @@
    *U32 `(hex "FFFFFFFF")
    *U49 `(hex "1FFFFFFFFFFFF")
    *U64 `(hex "FFFFFFFFFFFFFFFF") )
-# generation prime from @misc/rsa.l from PicoLisp
+# prime functions from @misc/rsa.l from PicoLisp
 (de longRand (N)
    (use (R D)
       (while (=0 (setq R (abs (rand)))))
@@ -24,7 +24,6 @@
          (do 50
             (NIL (_prim? N Q K))
             T ) ) ) )
-
 # (Knuth Vol.2, p.379)
 (de _prim? (N Q K)
    (use (X J Y)
@@ -44,7 +43,6 @@
                (<= K (inc 'J)) )
             NIL )
          (setq Y (% (* Y Y) N)) ) ) )
-
 # Find a prime number with `Len' digits
 (de prime (Len)
    (let P (longRand (** 10 (*/ Len 2 3)))
@@ -59,6 +57,7 @@
          (until (prime? (setq R (inc (* K P))))
             (inc 'K 6) )
          R ) ) )
+# ^^^^^^^
 (de mod32 (N)
    (& N *U32) )
 (de mod32* (A B)
@@ -71,39 +70,40 @@
          (T (=0 (setq Y (>> 1 Y)))
             M )
          (setq X (% (* X X) N)) ) ) )
-(de positive (N)
-   (- 64 (length (bin N))) )
 (de sprp (N B)
-   (msg 'next)
-   (let (D1 (>> 1 (dec N))  D D1  Z 0  R 0)
-      (until (bit? 1 D1)
-         (setq D1 (>> 1 D1))
+   (let (N1 (dec N)  D (>> 1 N1)  Z 0  R)
+      (until (bit? 1 D)
+         (setq D (>> 1 D))
          (inc 'Z) )
-      (println 'D D 'D1 D1 'Z Z)
-      (println 'N N 'N-1 (dec N) (* D (** 2 Z)))
-
-      (println 'mod B D N)
       (setq R (**Mod B D N))
-      (println 'R R)
+      (cond
+         ((or (=1 R) (= R N1)) 1)
+         ((> R 1)
+            (if (=0 Z)
+               @
+               (do Z
+                  (setq R (% (* R R) N))
+                  (T (= R N1) 1)
+                  0 ) ) )
+         ((>= B N) 1)
+         (T 0) ) ) )
+# XXX
+(test 1 (sprp 480194653 2139))
+(test 0 (sprp 20074069 32374))
+(test 1 (sprp 8718775377449 2))
+(test 1 (sprp 8718775377449 687))
 
-      (do Z
-         (setq R (% (* R R) N))
-         (println 'inside-Z 'R R)
-         (when (= R (dec N))
-            (println 'found 'R R 'decN (dec N))
-         )
-      )
-      (println 'after-Z-loop 'B B 'N N)
-   )
-)
-#(sprp 480194653 2139)
-#(sprp 20074069 32374)
-#(sprp 92829781 3350)
-#(sprp 8718775377449 2)
-#(sprp 8651776913431 2)
-#(sprp 8651776913431 767)
-#(sprp 19473535927 4351)
-#(sprp 19 1627)
+(test 1 (sprp 8651776913431 2))
+(test 0 (sprp 8651776913431 767))
+
+(test 1 (sprp 3315293452192821991 2))
+(test 1 (sprp 3315293452192821991 8638))
+(test 1 (sprp 3315293452192821991 135))
+
+(test 1 (sprp 1152965996591997761 2))
+(test 1 (sprp 1152965996591997761 1941))
+(test 0 (sprp 1152965996591997761 15))
+
 
 (de check (N)
    (let
@@ -120,14 +120,6 @@
       (println 'S S 'B B)
    )
 )
-(pp 'check)
-(println (check 480194653))
-(println (check 8718775377449))
-(println (check 8651776913431))
-(println (check 1152965996591997761))
-
-
-
 
 (msg 'ok)
 (bye)
