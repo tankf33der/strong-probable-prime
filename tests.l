@@ -21,11 +21,30 @@
 (test 1 (berg? 8718775377449))
 (prinl "reference tests - OK")
 
+#{
 (prinl "generate random N-digit primes and test:")
 (for N (range 3 19)
-   (do (* (dec N) 4096)
+   (do 128
       (test 1 (berg? (prime N))) )
       (prinl N "-digits primes - OK") )
+}#
+
+#{
+(in "test.dat"
+   (until (eof)
+      (let N (format (line T))
+         (println 'N N (berg? N)) ) ) )
+}#
+
+(in "psps-below-2-to-64.txt"
+   (until (eof)
+      (let N (format (line T))
+         (when (=1 (berg? N))
+            (println 'N N) )
+      )
+   )
+)
+
 
 (msg 'ok)
 (bye)

@@ -60,8 +60,12 @@
 # ^^^^^^^
 (de mod32 (N)
    (& N *U32) )
+(de mod64 (N)
+   (& N *U64) )
 (de mod32* (A B)
    (mod32 (* A B)) )
+(de mod64* (A B)
+   (mod64 (* A B)) )
 (de **Mod (X Y N)
    (let M 1
       (loop
@@ -87,7 +91,8 @@
                   0 ) ) )
          ((>= B N) 1)
          (T 0) ) ) )
-# no strict input validation
+# no strict input validation.
+# Output:
 # 0   - composite
 # 1   - prime
 # NIL - panic, report.
@@ -100,7 +105,7 @@
             (T 2) )
          B
          (get
-            (if (gt0 S ) *B64 *B32)
+            (if (gt0 S) *B64 *B32)
             (inc (>> (if (gt0 S) 18 24) (mod32* `(hex "AD625B89") N))) ) )
       (when (and (> N 1) (bit? 1 N))
          (cond
