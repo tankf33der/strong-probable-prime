@@ -87,25 +87,11 @@
                   0 ) ) )
          ((>= B N) 1)
          (T 0) ) ) )
-# XXX
-(test 1 (sprp 480194653 2139))
-(test 0 (sprp 20074069 32374))
-(test 1 (sprp 8718775377449 2))
-(test 1 (sprp 8718775377449 687))
-
-(test 1 (sprp 8651776913431 2))
-(test 0 (sprp 8651776913431 767))
-
-(test 1 (sprp 3315293452192821991 2))
-(test 1 (sprp 3315293452192821991 8638))
-(test 1 (sprp 3315293452192821991 135))
-
-(test 1 (sprp 1152965996591997761 2))
-(test 1 (sprp 1152965996591997761 1941))
-(test 0 (sprp 1152965996591997761 15))
-
-
-(de check (N)
+# no strict input validation
+# 0   - composite
+# 1   - prime
+# NIL - panic, report.
+(de berg? (N)
    (let
       (S
          (cond
@@ -115,11 +101,15 @@
          B
          (get
             (if (gt0 S ) *B64 *B32)
-            (inc (>> (if (gt0 S) 18 24) (mod32* `(hex "AD625B89") N))) )
-      )
-      (println 'S S 'B B)
-   )
-)
-
-(msg 'ok)
-(bye)
+            (inc (>> (if (gt0 S) 18 24) (mod32* `(hex "AD625B89") N))) ) )
+      (when (and (> N 1) (bit? 1 N))
+         (cond
+            ((=0 S) (sprp N B))
+            ((=1 S)
+               (when (=1 (sprp N 2)) (sprp N B)) )
+            (T
+               (when
+                  (and
+                     (=1 (sprp N 2))
+                     (=1 (sprp N B)) )
+                  (sprp N (get *B (inc (>> 13 B)))) ) ) ) ) ) )
