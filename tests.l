@@ -19,7 +19,13 @@
 (test 1 (berg? 3315293452192821991))
 (test 0 (berg? 8651776913431))
 (test 1 (berg? 8718775377449))
-(msg 'ref-OK)
+(prinl "reference tests - OK")
+
+(prinl "generate random N-digit primes and test:")
+(for N (range 3 19)
+   (do (* (dec N) 4096)
+      (test 1 (berg? (prime N))) )
+      (prinl N "-digits primes - OK") )
 
 (msg 'ok)
 (bye)
